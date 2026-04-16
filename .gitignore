@@ -1,0 +1,74 @@
+# ===========================
+# Backend (Spring Boot / Gradle)
+# ===========================
+backend/build/
+backend/.gradle/
+backend/out/
+backend/*.log
+backend/logs/
+
+# Gradle wrapper (선택: 팀 공유 시 주석 해제)
+# backend/gradle/wrapper/gradle-wrapper.jar
+
+# IDE
+backend/.idea/
+backend/*.iml
+backend/*.iws
+backend/*.ipr
+backend/.classpath
+backend/.project
+backend/.settings/
+backend/bin/
+
+# Spring Boot 환경 설정 (로컬 전용)
+backend/src/main/resources/application-local.yaml
+backend/src/main/resources/application-local.yml
+backend/src/main/resources/application-secret.yaml
+backend/src/main/resources/application-secret.yml
+
+# ===========================
+# Frontend (React / Vite / Node)
+# ===========================
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/.cache/
+frontend/coverage/
+
+# 환경 변수
+frontend/.env
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+
+# 빌드 분석 결과
+frontend/stats.html
+
+# ===========================
+# 공통
+# ===========================
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE / Editor
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# 로그
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 임시 파일
+*.tmp
+*.temp

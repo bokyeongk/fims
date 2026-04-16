@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gradle wrapper *)",
+      "Bash(cp /c/workspace/00.base/base/gradlew /c/workspace/00.base/claude/google/backend/gradlew)",
+      "Bash(cp /c/workspace/00.base/base/gradlew.bat /c/workspace/00.base/claude/google/backend/gradlew.bat)",
+      "Bash(cp -r /c/workspace/00.base/base/gradle /c/workspace/00.base/claude/google/backend/gradle)",
+      "Bash(./gradlew compileJava)",
+      "Bash(./gradlew test *)",
+      "Bash(npm create *)",
+      "Bash(npm install *)",
+      "Bash(npm uninstall *)",
+      "Bash(npx tailwindcss *)",
+      "Bash(npx tsc *)",
+      "Bash(npm run *)",
+      "mcp__plugin_figma_figma__get_design_context"
+    ]
+  }
+}
