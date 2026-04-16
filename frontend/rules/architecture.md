@@ -45,6 +45,18 @@ src/
 - TanStack Query default config (in `main.tsx`): `staleTime: 5min`, `retry: 1`
 - Pattern: create per-feature files (e.g., `src/api/user.ts`) exporting `useQuery`/`useMutation` hooks that use `apiClient`
 
+## Responsive Navigation
+
+모바일과 웹 환경에서 서로 다른 네비게이션을 활성화한다. JavaScript window width 감지 없이 TailwindCSS breakpoint만으로 처리한다.
+
+| 환경 | Breakpoint | 컴포넌트 |
+|------|-----------|---------|
+| 모바일 | `< md` (768px 미만) | `BottomNavigation.tsx` — 화면 하단 고정 탭 |
+| 웹/데스크탑 | `≥ md` (768px 이상) | `Sidebar.tsx` — 좌측 고정 LNB |
+
+- 네비게이션 메뉴 아이템은 `src/components/common/navItems.ts`에서 중앙 관리하며, BottomNavigation과 Sidebar가 공유한다.
+- 가시성 전환은 CSS class(`md:hidden` / `hidden md:flex`)로만 처리한다.
+
 ## Conventions
 
 - Path alias: `@` → `src/` — use `@/components/...`, `@/lib/utils`, etc.
