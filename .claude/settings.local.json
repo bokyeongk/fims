@@ -13,7 +13,9 @@
       "Bash(npx tailwindcss *)",
       "Bash(npx tsc *)",
       "Bash(npm run *)",
-      "mcp__plugin_figma_figma__get_design_context"
+      "mcp__plugin_figma_figma__get_design_context",
+      "Bash(xargs ls *)",
+      "Bash(npx shadcn@latest add button input label checkbox --yes)"
     ]
   }
 }

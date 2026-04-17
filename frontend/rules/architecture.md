@@ -57,8 +57,68 @@ src/
 - 네비게이션 메뉴 아이템은 `src/components/common/navItems.ts`에서 중앙 관리하며, BottomNavigation과 Sidebar가 공유한다.
 - 가시성 전환은 CSS class(`md:hidden` / `hidden md:flex`)로만 처리한다.
 
+## Responsive Strategy
+
+프로젝트는 **Single Codebase(반응형)**를 지향하며, 기기별 특성에 따라 다음과 같이 최적화한다.
+
+### 1. 반응형 레이아웃
+
+하나의 컴포넌트 내에서 TailwindCSS Media Query와 Grid 시스템으로 레이아웃을 대응한다.
+
+| 환경 | Breakpoint | Tailwind prefix |
+|------|-----------|----------------|
+| Mobile | `< 768px` | (기본값) |
+| Tablet | `768px ~ 1024px` | `md:` |
+| Desktop | `> 1024px` | `lg:` |
+
+### 2. 조건부 렌더링 (Feature Gating)
+
+- **정보 밀도**: Desktop에서는 데이터 테이블 컬럼을 확장하여 더 많은 정보를 노출하고, Mobile에서는 핵심 요약 정보 위주로 노출한다.
+- **기능 제한**: 엑셀 업로드/다운로드, 대용량 로그 조회 등 복잡한 관리자 기능은 **Desktop 전용(`isDesktop`)**으로 구현하여 모바일 성능 저하를 방지한다.
+- **구현 방식**: `useMediaQuery` 훅이나 전역 `deviceStatus` 상태를 참조하여 컴포넌트 단위로 분기 처리한다.
+
+```tsx
+// 예시
+const { isDesktop } = useMediaQuery()
+{isDesktop && <ExcelDownloadButton />}
+```
+
+### 3. 모바일 최적화 (Mobile-First)
+
+- **터치 인터페이스**: 모든 버튼과 클릭 요소는 최소 `44×44px` 이상의 터치 영역을 확보한다.
+- **성능 관리**: Desktop 전용 무거운 라이브러리는 Dynamic Import로 필요 시에만 로드하여 Webview 로딩 속도를 최적화한다.
+
+```tsx
+// 예시
+const HeavyChart = lazy(() => import('@/components/HeavyChart'))
+```
+
+### 4. 개발 가이드
+
+- 컴포넌트 작성 시 **"이 기능이 모바일에서도 유효한가?"** 를 먼저 자문한다.
+- 모바일에서 불필요한 고해상도 이미지나 복잡한 애니메이션은 지양한다.
+- CSS만으로 처리 가능한 반응형은 `useMediaQuery` 없이 Tailwind class로만 구현한다.
+
+---
+
 ## Conventions
 
 - Path alias: `@` → `src/` — use `@/components/...`, `@/lib/utils`, etc.
 - shadcn/ui base color: `slate`, CSS variables enabled
 - Add shadcn components: `npx shadcn@latest add <component>` — components land in `src/components/ui/`, do not edit these files directly
+
+## UI 컴포넌트 사용 규칙
+
+**모든 UI 요소는 기본 HTML 태그 대신 shadcn/ui 컴포넌트를 사용한다.**
+
+| HTML 태그 | shadcn/ui 컴포넌트 | 비고 |
+|-----------|-------------------|------|
+| `<button>` | `<Button>` | `@/components/ui/button` |
+| `<input>` | `<Input>` | `@/components/ui/input` |
+| `<label>` | `<Label>` | `@/components/ui/label` |
+| `<input type="checkbox">` | `<Checkbox>` | `@/components/ui/checkbox` |
+| `<select>` | `<Select>` | `@/components/ui/select` |
+
+- 필요한 컴포넌트가 없으면 `npx shadcn@latest add <component>` 로 추가 후 사용한다.
+- shadcn 컴포넌트에 없는 요소(Canvas, SVG 등)만 예외적으로 기본 HTML 태그를 허용한다.
+- shadcn 컴포넌트에 Tailwind 클래스를 추가할 때는 `className` prop을 사용한다.

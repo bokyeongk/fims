@@ -5,13 +5,17 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Checkbox } from "@/components/ui/checkbox"
 import type { QuoteFilters, QuoteStatus } from "@/api/quote"
 
 const STATUS_OPTIONS: { value: QuoteStatus; label: string }[] = [
-  { value: "PENDING", label: "견적 대기" },
-  { value: "IN_PROGRESS", label: "시공 중" },
-  { value: "COMPLETED", label: "시공 완료" },
-  { value: "CANCELLED", label: "취소" },
+  { value: "PENDING",     label: "견적 대기" },
+  { value: "IN_PROGRESS", label: "시공 중"   },
+  { value: "COMPLETED",   label: "시공 완료" },
+  { value: "CANCELLED",   label: "취소"      },
 ]
 
 interface Props {
@@ -35,53 +39,53 @@ const QuoteFilterPopup = ({ filters, onApply, open, onOpenChange }: Props) => {
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="left" className="flex flex-col w-80 max-w-full p-0">
-        <SheetHeader className="px-5 py-4 border-b border-slate-200">
-          <SheetTitle className="text-base font-semibold text-slate-800">
+      <SheetContent side="left" className="flex flex-col w-72 max-w-full p-0">
+        <SheetHeader className="px-3 py-2 border-b border-slate-200">
+          <SheetTitle className="text-sm font-semibold leading-tight text-slate-800">
             조회 조건
           </SheetTitle>
         </SheetHeader>
 
         {/* Body */}
-        <div className="flex-1 overflow-y-auto px-5 py-6 space-y-5">
+        <div className="flex-1 overflow-y-auto px-3 py-3 space-y-3">
           {/* Contract date range */}
           <fieldset>
-            <legend className="text-sm font-medium text-slate-700 mb-2">
+            <legend className="text-xs font-medium text-slate-500 mb-1.5 uppercase tracking-wide">
               계약기간
             </legend>
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-2">
-                <label
+            <div className="flex flex-col gap-1.5">
+              <div className="flex items-center gap-1.5">
+                <Label
                   htmlFor="filter-start-date"
-                  className="text-xs text-slate-500 w-10 shrink-0"
+                  className="text-xs text-slate-500 w-10 shrink-0 leading-tight"
                 >
                   시작일
-                </label>
-                <input
+                </Label>
+                <Input
                   id="filter-start-date"
                   type="date"
                   value={local.startDate}
                   onChange={(e) =>
                     setLocal((prev) => ({ ...prev, startDate: e.target.value }))
                   }
-                  className="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="h-auto rounded border-slate-300 px-2 py-1 text-sm leading-tight focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-0"
                 />
               </div>
-              <div className="flex items-center gap-2">
-                <label
+              <div className="flex items-center gap-1.5">
+                <Label
                   htmlFor="filter-end-date"
-                  className="text-xs text-slate-500 w-10 shrink-0"
+                  className="text-xs text-slate-500 w-10 shrink-0 leading-tight"
                 >
                   종료일
-                </label>
-                <input
+                </Label>
+                <Input
                   id="filter-end-date"
                   type="date"
                   value={local.endDate}
                   onChange={(e) =>
                     setLocal((prev) => ({ ...prev, endDate: e.target.value }))
                   }
-                  className="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="h-auto rounded border-slate-300 px-2 py-1 text-sm leading-tight focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-0"
                 />
               </div>
             </div>
@@ -89,36 +93,34 @@ const QuoteFilterPopup = ({ filters, onApply, open, onOpenChange }: Props) => {
 
           {/* Status multi-select */}
           <fieldset>
-            <legend className="text-sm font-medium text-slate-700 mb-2">
+            <legend className="text-xs font-medium text-slate-500 mb-1.5 uppercase tracking-wide">
               진행상태
             </legend>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1">
               {STATUS_OPTIONS.map(({ value, label }) => {
                 const checked = (local.statuses ?? []).includes(value)
                 return (
-                  <label
-                    key={value}
-                    className="flex items-center gap-2 cursor-pointer"
-                  >
-                    <input
-                      type="checkbox"
+                  <div key={value} className="flex items-center gap-1.5">
+                    <Checkbox
+                      id={`status-${value}`}
                       checked={checked}
-                      onChange={() => {
+                      onCheckedChange={() => {
                         setLocal((prev) => {
                           const current = prev.statuses ?? []
                           const next = checked
                             ? current.filter((s) => s !== value)
                             : [...current, value]
-                          return {
-                            ...prev,
-                            statuses: next.length > 0 ? next : undefined,
-                          }
+                          return { ...prev, statuses: next.length > 0 ? next : undefined }
                         })
                       }}
-                      className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                     />
-                    <span className="text-sm text-slate-700">{label}</span>
-                  </label>
+                    <Label
+                      htmlFor={`status-${value}`}
+                      className="text-sm leading-tight text-slate-700 cursor-pointer"
+                    >
+                      {label}
+                    </Label>
+                  </div>
                 )
               })}
             </div>
@@ -126,13 +128,13 @@ const QuoteFilterPopup = ({ filters, onApply, open, onOpenChange }: Props) => {
 
           {/* Contractor name */}
           <div>
-            <label
+            <Label
               htmlFor="filter-contractor"
-              className="block text-sm font-medium text-slate-700 mb-2"
+              className="block text-xs font-medium text-slate-500 mb-1.5 uppercase tracking-wide"
             >
               계약자명
-            </label>
-            <input
+            </Label>
+            <Input
               id="filter-contractor"
               type="text"
               placeholder="계약자명 검색"
@@ -143,20 +145,20 @@ const QuoteFilterPopup = ({ filters, onApply, open, onOpenChange }: Props) => {
                   contractorName: e.target.value || undefined,
                 }))
               }
-              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="h-auto rounded border-slate-300 px-2 py-1 text-sm leading-tight focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-0"
             />
           </div>
         </div>
 
         {/* Footer */}
-        <div className="px-5 py-4 border-t border-slate-200">
-          <button
+        <div className="px-3 py-2 border-t border-slate-200">
+          <Button
             type="button"
             onClick={handleApply}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg py-2.5 text-sm transition-colors"
+            className="w-full rounded bg-blue-600 hover:bg-blue-700 px-3 py-1.5 text-sm font-semibold leading-tight h-auto"
           >
             검색
-          </button>
+          </Button>
         </div>
       </SheetContent>
     </Sheet>

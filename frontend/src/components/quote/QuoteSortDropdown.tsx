@@ -20,7 +20,7 @@ const options: { value: QuoteSortType; label: string }[] = [
 const QuoteSortDropdown = ({ value, onChange }: Props) => {
   return (
     <Select value={value} onValueChange={(v) => onChange(v as QuoteSortType)}>
-      <SelectTrigger className="h-auto border border-slate-300 rounded-lg px-3 py-1.5 text-sm text-slate-700 bg-white hover:bg-slate-50 focus:ring-2 focus:ring-blue-500 w-auto min-w-[110px]">
+      <SelectTrigger className="h-auto border border-slate-300 rounded px-2 py-1 text-sm leading-tight text-slate-700 bg-white hover:bg-slate-50 focus:ring-1 focus:ring-blue-500 w-auto min-w-[90px]">
         <SelectValue />
       </SelectTrigger>
       <SelectContent>

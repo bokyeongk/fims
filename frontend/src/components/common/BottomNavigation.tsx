@@ -1,13 +1,15 @@
 import { useState } from 'react'
 import { NavLink, useNavigate, useLocation } from 'react-router-dom'
-import { X } from 'lucide-react'
+import { X, LogOut } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { NAV_ITEMS, type NavItem } from '@/components/common/navItems'
+import { useLogout } from '@/api/auth'
 
 const BottomNavigation = () => {
   const [openItem, setOpenItem] = useState<NavItem | null>(null)
   const navigate = useNavigate()
   const location = useLocation()
+  const { mutate: logout, isPending: isLoggingOut } = useLogout()
 
   const handleItemClick = (item: NavItem) => {
     if (item.children?.length) {
@@ -104,6 +106,20 @@ const BottomNavigation = () => {
               </li>
             )
           })}
+          <li className="flex-1">
+            <button
+              type="button"
+              onClick={() => logout()}
+              disabled={isLoggingOut}
+              className={cn(
+                'flex flex-col items-center justify-center gap-0.5 w-full h-16 text-xs font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed',
+                'text-red-400 hover:text-red-600'
+              )}
+            >
+              <LogOut size={22} strokeWidth={1.8} aria-hidden="true" />
+              <span>로그아웃</span>
+            </button>
+          </li>
         </ul>
       </nav>
     </>

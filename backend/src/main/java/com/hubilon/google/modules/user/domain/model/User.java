@@ -16,14 +16,20 @@ public class User extends BaseJpaEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 255)
+    @Column(nullable = true, length = 255)
     private String email;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = true, length = 100)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String password;
+
+    @Column(nullable = true, length = 30)
+    private String phone;
+
+    @Column(nullable = true, columnDefinition = "TEXT")
+    private String signatureData;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
@@ -41,6 +47,26 @@ public class User extends BaseJpaEntity {
         ACTIVE, INACTIVE
     }
 
+    public static User ofLocal(String email, String name, String password) {
+        return User.builder()
+                .email(email)
+                .name(name)
+                .password(password)
+                .role(Role.USER)
+                .status(Status.ACTIVE)
+                .build();
+    }
+
+    public static User ofSocial(String name, String email) {
+        return User.builder()
+                .name(name)
+                .email(email)
+                .password(null)
+                .role(Role.USER)
+                .status(Status.ACTIVE)
+                .build();
+    }
+
     public boolean isActive() {
         return Status.ACTIVE.equals(this.status);
     }
@@ -51,5 +77,19 @@ public class User extends BaseJpaEntity {
 
     public void deactivate() {
         this.status = Status.INACTIVE;
+    }
+
+    public void updateProfile(String name, String phone, String email) {
+        this.name = name;
+        this.phone = phone;
+        this.email = email;
+    }
+
+    public void updateSignature(String signatureData) {
+        this.signatureData = signatureData;
+    }
+
+    public void clearSignature() {
+        this.signatureData = null;
     }
 }

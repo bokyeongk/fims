@@ -31,13 +31,11 @@ public class UserService implements RegisterUserUseCase, LoginUserUseCase, GetUs
             throw new ServiceException(ErrorCode.USER_ALREADY_EXISTS);
         }
 
-        User user = User.builder()
-                .email(command.email())
-                .name(command.name())
-                .password(passwordEncoder.encode(command.password()))
-                .role(User.Role.USER)
-                .status(User.Status.ACTIVE)
-                .build();
+        User user = User.ofLocal(
+                command.email(),
+                command.name(),
+                passwordEncoder.encode(command.password())
+        );
 
         return userRepository.save(user);
     }
@@ -49,6 +47,10 @@ public class UserService implements RegisterUserUseCase, LoginUserUseCase, GetUs
 
         if (!user.isActive()) {
             throw new ServiceException(ErrorCode.USER_INACTIVE);
+        }
+
+        if (user.getPassword() == null) {
+            throw new ServiceException(ErrorCode.USER_SOCIAL_LOGIN_ONLY);
         }
 
         if (!passwordEncoder.matches(command.password(), user.getPassword())) {

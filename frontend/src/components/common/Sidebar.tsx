@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
-import { ChevronDown } from 'lucide-react'
+import { ChevronDown, LogOut } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { NAV_ITEMS, type NavItem } from '@/components/common/navItems'
+import { useLogout } from '@/api/auth'
 
 const Sidebar = () => {
   const location = useLocation()
+  const { mutate: logout, isPending: isLoggingOut } = useLogout()
 
   const initialOpen = NAV_ITEMS.reduce<Record<string, boolean>>((acc, item) => {
     if (item.children) {
@@ -115,6 +117,17 @@ const Sidebar = () => {
           {NAV_ITEMS.map(renderItem)}
         </ul>
       </nav>
+      <div className="border-t border-slate-200 px-3 py-4">
+        <button
+          type="button"
+          onClick={() => logout()}
+          disabled={isLoggingOut}
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <LogOut size={20} aria-hidden="true" />
+          <span>로그아웃</span>
+        </button>
+      </div>
     </aside>
   )
 }
