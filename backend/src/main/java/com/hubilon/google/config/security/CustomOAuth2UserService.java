@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -43,16 +44,26 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 .getUserNameAttributeName();
 
         OAuthUserInfo userInfo = extractUserInfo(provider, attributes);
+        log.info("OAuth2 login: provider={}, userInfo.providerId={}", provider, userInfo.providerId());
 
-        User user = userSocialAccountRepository.findByProviderAndProviderId(provider, userInfo.providerId())
-                .map(UserSocialAccount::getUser)
-                .orElseGet(() -> {
-                    User newUser = User.ofSocial(userInfo.name(), userInfo.email());
-                    User savedUser = userRepository.save(newUser);
-                    UserSocialAccount socialAccount = UserSocialAccount.of(savedUser, provider, userInfo.providerId(), userInfo.email());
-                    userSocialAccountRepository.save(socialAccount);
-                    return savedUser;
-                });
+        String rawAccessToken = userRequest.getAccessToken().getTokenValue();
+
+        Optional<UserSocialAccount> existingAccount = userSocialAccountRepository
+                .findByProviderAndProviderId(provider, userInfo.providerId());
+
+        User user;
+        if (existingAccount.isPresent()) {
+            UserSocialAccount account = existingAccount.get();
+            account.updateTokens(rawAccessToken, account.getRefreshToken());
+            userSocialAccountRepository.save(account);
+            user = account.getUser();
+        } else {
+            User newUser = User.ofSocial(userInfo.name(), userInfo.email());
+            user = userRepository.save(newUser);
+            UserSocialAccount newAccount = UserSocialAccount.of(user, provider, userInfo.providerId(), userInfo.email());
+            newAccount.updateTokens(rawAccessToken, null);
+            userSocialAccountRepository.save(newAccount);
+        }
 
         log.info("OAuth2 login: provider={}, userId={}, email={}", provider, user.getId(), user.getEmail());
 

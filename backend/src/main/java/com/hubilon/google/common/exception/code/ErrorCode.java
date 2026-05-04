@@ -31,7 +31,15 @@ public enum ErrorCode {
     EMAIL_VERIFY_INVALID(HttpStatus.BAD_REQUEST, "email.verify.invalid"),
     EMAIL_VERIFY_EXPIRED(HttpStatus.BAD_REQUEST, "email.verify.expired"),
     EMAIL_VERIFY_EXCEEDED(HttpStatus.TOO_MANY_REQUESTS, "email.verify.exceeded"),
-    PHONE_FORMAT_INVALID(HttpStatus.BAD_REQUEST, "phone.format.invalid");
+    PHONE_FORMAT_INVALID(HttpStatus.BAD_REQUEST, "phone.format.invalid"),
+
+    // Google
+    GOOGLE_AUTH_EXPIRED(HttpStatus.UNAUTHORIZED, "google.auth.expired"),
+    GOOGLE_SCOPE_INSUFFICIENT(HttpStatus.FORBIDDEN, "google.scope.insufficient"),
+
+    // QuoteSheet
+    QUOTE_SHEET_NOT_FOUND(HttpStatus.NOT_FOUND, "quote.sheet.not.found"),
+    QUOTE_SHEET_FORBIDDEN(HttpStatus.FORBIDDEN, "quote.sheet.forbidden");
 
     private final HttpStatus httpStatus;
     private final String messageKey;

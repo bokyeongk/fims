@@ -61,9 +61,9 @@ const QuotePage = () => {
 
         <Button
           className="rounded bg-blue-600 hover:bg-blue-700 px-2 py-1 text-sm font-semibold leading-tight h-auto"
-          aria-label="견적서 추가"
+          aria-label="추가"
         >
-          + 견적서 추가
+          + 추가
         </Button>
       </div>
 

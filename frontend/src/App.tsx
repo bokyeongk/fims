@@ -4,6 +4,7 @@ import ProtectedRoute from '@/components/common/ProtectedRoute'
 import HomePage from '@/pages/HomePage'
 import SchedulePage from '@/pages/SchedulePage'
 import QuotePage from '@/pages/QuotePage'
+import QuoteSheetPage from '@/pages/QuoteSheetPage'
 import ConstructionPage from '@/pages/ConstructionPage'
 import WorkersPage from '@/pages/WorkersPage'
 import SettingsProfilePage from '@/pages/SettingsProfilePage'
@@ -28,6 +29,7 @@ const App = () => {
             <Route path="/schedule" element={<SchedulePage />} />
             <Route path="/quote" element={<QuotePage />} />
             <Route path="/quote/:id" element={<QuoteDetailPage />} />
+            <Route path="/quote-sheets" element={<QuoteSheetPage />} />
             <Route path="/construction" element={<ConstructionPage />} />
             <Route path="/workers" element={<WorkersPage />} />
             <Route path="/settings/profile" element={<SettingsProfilePage />} />

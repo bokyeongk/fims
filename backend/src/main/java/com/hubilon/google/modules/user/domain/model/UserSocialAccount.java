@@ -1,5 +1,6 @@
 package com.hubilon.google.modules.user.domain.model;
 
+import com.hubilon.google.common.converter.TokenEncryptedStringConverter;
 import com.hubilon.google.common.entity.BaseJpaEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -32,6 +33,19 @@ public class UserSocialAccount extends BaseJpaEntity {
 
     @Column(nullable = true, length = 255)
     private String email;
+
+    @Convert(converter = TokenEncryptedStringConverter.class)
+    @Column(name = "access_token", columnDefinition = "TEXT")
+    private String accessToken;
+
+    @Convert(converter = TokenEncryptedStringConverter.class)
+    @Column(name = "refresh_token", columnDefinition = "TEXT")
+    private String refreshToken;
+
+    public void updateTokens(String accessToken, String refreshToken) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+    }
 
     public static UserSocialAccount of(User user, OAuthProvider provider, String providerId, String email) {
         return UserSocialAccount.builder()

@@ -13,6 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -35,6 +38,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final OAuth2Properties oAuth2Properties;
     private final UserRepository userRepository;
     private final UserSocialAccountRepository userSocialAccountRepository;
+    private final OAuth2AuthorizedClientService authorizedClientService;
 
     @Override
     @Transactional
@@ -91,9 +95,36 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         Cookie cookie = buildAccessTokenCookie(accessToken, maxAgeSeconds);
         response.addCookie(cookie);
 
+        // refresh token 저장 (OAuth2AuthorizedClient에서 추출)
+        saveRefreshToken(authentication, attributes);
+
         String redirectUrl = allowedOrigin + "/oauth2/callback";
         log.info("OAuth2 login success: userId={}, redirectTo={}", incomingUserId, redirectUrl);
         getRedirectStrategy().sendRedirect(request, response, redirectUrl);
+    }
+
+    private void saveRefreshToken(Authentication authentication, Map<String, Object> attributes) {
+        if (!(authentication instanceof OAuth2AuthenticationToken oAuth2Token)) return;
+
+        try {
+            OAuth2AuthorizedClient authorizedClient = authorizedClientService.loadAuthorizedClient(
+                    oAuth2Token.getAuthorizedClientRegistrationId(), oAuth2Token.getName());
+
+            if (authorizedClient == null || authorizedClient.getRefreshToken() == null) return;
+
+            String refreshToken = authorizedClient.getRefreshToken().getTokenValue();
+            OAuthProvider provider = resolveProvider(attributes);
+            String providerId = resolveProviderId(provider, attributes);
+
+            userSocialAccountRepository.findByProviderAndProviderId(provider, providerId)
+                    .ifPresent(account -> {
+                        account.updateTokens(account.getAccessToken(), refreshToken);
+                        userSocialAccountRepository.save(account);
+                        log.info("Refresh token saved: provider={}, providerId={}", provider, providerId);
+                    });
+        } catch (Exception e) {
+            log.warn("Refresh token 저장 실패 (구글시트 이동 시 재발급 필요): {}", e.getMessage());
+        }
     }
 
     private OAuthProvider resolveProvider(Map<String, Object> attributes) {
